@@ -20,65 +20,123 @@ def load_data():
 
 data=load_data() 
 
+ 
+dic_uni = {'ROP' : ' (ft/hr)',
+            'Footage':' (ft)',
+            'Min Flow Rate' : ' (GPM)',
+            'Blades' : ' (#)',
+            'Cutter size' : ' (mm)',
+            'Max Flow Rate' : '(GPM)',
+            'TFA' : '(in2)',
+            'HSI' : ' (HP/in2)',
+            'Min WOB' : ' (Klb)',
+            'Max WOB' : ' (Klb)',
+            'Mud Weight' : '( ppg)',
+            'Min_RPM' : ' (rev per min)',
+            'Max_RPM' : ' (rev per min)',
+            'Torque Min' : '( klb-ft)',
+            'Torque Max' : '( klb-ft)'
+            }
+
+ # Definimos la Sidebar
+
+st.sidebar.title("Seleccione Los Parametros De Su Grafica")
+
+z = st.sidebar.selectbox(
+    'Parametro a Optimizar',
+    ('ROP','Footage')
+    )
+
+x = st.sidebar.selectbox(
+    'Eje X',
+    ('Min Flow Rate','Blades','Cutter size','Max Flow Rate','TFA',
+    'HSI','Min WOB','Max WOB','Mud Weight','Min_RPM','Max_RPM',
+    'Torque Min','Torque Max')
+    )
+
+y = st.sidebar.selectbox(
+    'Eje Y',
+    ('Min WOB','Blades','Cutter size','Min Flow Rate','Max Flow Rate','TFA',
+    'HSI','Max WOB','Mud Weight','Min_RPM','Max_RPM',
+    'Torque Min','Torque Max')
+    )
+
+SB_Size = st.sidebar.selectbox(
+    'Tamaño de la Broca (in)',
+    ('All','6.0','8.5', '10.625', '14.75', '18.5', "26.0", "36.0")
+    )
+    
+SB_Type = st.sidebar.selectbox(
+    'Tipo de Broca)',
+    ('All','PDC', 'Tricone', 'Hybrid', 'Impregnated')
+    )
+   
+SB_Structure = st.sidebar.selectbox(
+    'Structure',
+    ('All','Anticlinal N', 'Anticlinal M', 'Anticlinal F', 'Anticlinal P', 'Imbricate',
+    'Anticlinal G', 'Anticlinal D')
+    )
+
+SB_Formation = st.sidebar.selectbox(
+    'Formation',
+    ('All','Colluvium','Guayabo', 'Charte', 'Leon','C1', 'C2', 'C3', 'C4','C5', 'C6', 'C7', 'C8','Sltn Market', 'Mirador', 'Los Cuervos', 'Barco', 'Guadalupe',
+    'Guad. Shale', 'Guad. Upper', 'Gacheta')
+    )
+    
+if (SB_Size!='All'):
+    if (SB_Type!='All'):
+        if(SB_Structure!='All'):
+            if(SB_Formation!='All'):#Filtre Size, Type, Estructura y Formation
+                SB_Size = float(SB_Size)
+                data=data.loc[(data.Size==SB_Size)&(data.Type==SB_Type)&(data.Structure==SB_Structure)&(data.Formation==SB_Formation)]
+            else: # Filtre Size, Type y Estructura
+                SB_Size = float(SB_Size)
+                data=data.loc[(data.Size==SB_Size)&(data.Type==SB_Type)&(data.Structure==SB_Structure)]
+        else:
+            if(SB_Formation!='All'): #Filtre Size, Type y Formation
+                SB_Size = float(SB_Size)
+                data=data.loc[(data.Size==SB_Size)&(data.Type==SB_Type)&(data.Formation==SB_Formation)]
+            else: # Filtre Size Type
+                SB_Size = float(SB_Size)
+                data=data.loc[(data.Size==SB_Size)&(data.Type==SB_Type)]
+    else:
+        if(SB_Structure!='All'):
+            if(SB_Formation!='All'):#Filtre Size, Estructura y Formation
+                SB_Size = float(SB_Size)
+                data=data.loc[(data.Size==SB_Size)&(data.Structure==SB_Structure)&(data.Formation==SB_Formation)]
+            else:#Filtre Size y Estructura
+                SB_Size = float(SB_Size)
+                data=data.loc[(data.Size==SB_Size)&(data.Structure==SB_Structure)]
+        else:
+            if(SB_Formation!='All'):#Filtre Size y Formation
+                SB_Size = float(SB_Size)
+                data=data.loc[(data.Size==SB_Size)&(data.Formation==SB_Formation)]
+            else:#Filtre Size
+                SB_Size = float(SB_Size)
+                data=data.loc[(data.Size==SB_Size)]   
+else: # Quitando Size
+    if (SB_Type!='All'):
+        if(SB_Structure!='All'):
+            if(SB_Formation!='All'):#Filtre Type, Estructura y Formation
+                data=data.loc[(data.Type==SB_Type)&(data.Structure==SB_Structure)&(data.Formation==SB_Formation)]
+            else: # Filtre Type y Estructura
+                data=data.loc[(data.Type==SB_Type)&(data.Structure==SB_Structure)]
+        else:
+            if(SB_Formation!='All'): #Filtre Type y Formation
+                data=data.loc[(data.Type==SB_Type)&(data.Formation==SB_Formation)]
+            else: # Filtre Type
+                data=data.loc[(data.Type==SB_Type)]
+    else:
+        if(SB_Structure!='All'):
+            if(SB_Formation!='All'):#Filtre Estructura y Formation
+                data=data.loc[(data.Structure==SB_Structure)&(data.Formation==SB_Formation)]
+            else:#Filtre Estructura
+                data=data.loc[(data.Structure==SB_Structure)]
+        else:
+            if(SB_Formation!='All'):#Filtre Formation
+                data=data.loc[(data.Formation==SB_Formation)]
+            else:#Sin Filtro
+                data=data             
+
 st.dataframe(data,2000,150)
 
-# Collects user input features into dataframe
-uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
-if uploaded_file is not None:
-    input_df = pd.read_csv(uploaded_file)
-else:
-    def user_input_features():
-        island = st.sidebar.selectbox('Island',('Biscoe','Dream','Torgersen'))
-        sex = st.sidebar.selectbox('Sex',('male','female'))
-        bill_length_mm = st.sidebar.slider('Bill length (mm)', 32.1,59.6,43.9)
-        bill_depth_mm = st.sidebar.slider('Bill depth (mm)', 13.1,21.5,17.2)
-        flipper_length_mm = st.sidebar.slider('Flipper length (mm)', 172.0,231.0,201.0)
-        body_mass_g = st.sidebar.slider('Body mass (g)', 2700.0,6300.0,4207.0)
-        data = {'island': island,
-                'bill_length_mm': bill_length_mm,
-                'bill_depth_mm': bill_depth_mm,
-                'flipper_length_mm': flipper_length_mm,
-                'body_mass_g': body_mass_g,
-                'sex': sex}
-        features = pd.DataFrame(data, index=[0])
-        return features
-    input_df = user_input_features()
-
-# Combines user input features with entire penguins dataset
-# This will be useful for the encoding phase
-penguins_raw = pd.read_csv('penguins_cleaned.csv')
-penguins = penguins_raw.drop(columns=['species'])
-df = pd.concat([input_df,penguins],axis=0)
-
-# Encoding of ordinal features
-# https://www.kaggle.com/pratik1120/penguin-dataset-eda-classification-and-clustering
-encode = ['sex','island']
-for col in encode:
-    dummy = pd.get_dummies(df[col], prefix=col)
-    df = pd.concat([df,dummy], axis=1)
-    del df[col]
-df = df[:1] # Selects only the first row (the user input data)
-
-# Displays the user input features
-st.subheader('User Input features')
-
-if uploaded_file is not None:
-    st.write(df)
-else:
-    st.write('Awaiting CSV file to be uploaded. Currently using example input parameters (shown below).')
-    st.write(df)
-
-# Reads in saved classification model
-load_clf = pickle.load(open('penguins_clf.pkl', 'rb'))
-
-# Apply model to make predictions
-prediction = load_clf.predict(df)
-prediction_proba = load_clf.predict_proba(df)
-
-
-st.subheader('Prediction')
-penguins_species = np.array(['Adelie','Chinstrap','Gentoo'])
-st.write(penguins_species[prediction])
-
-st.subheader('Prediction Probability')
-st.write(prediction_proba)
