@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 DATE_TIME = "date/time"
-DATA_URL = ('https://raw.githubusercontent.com/diegojeda/Bit-Optimization-ML/master/BLCat.csv?token=AP452QJD3G6RCLCERTJIZWS7JLYZM')
+DATA_URL = ('https://raw.githubusercontent.com/diegojeda/test-penguin/master/BLCat.csv')
 
 st.title("Dashboard Para Visualizacion de Datos")
 st.markdown("""Esta aplicacion le permite visualizar los datos de performance de las brocas de su campo""")
