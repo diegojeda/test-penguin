@@ -2,21 +2,25 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
+import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 
-st.write("""
-# Penguin Prediction App
 
-This app predicts the **Palmer Penguin** species!
+DATE_TIME = "date/time"
+DATA_URL = (
+    'https://raw.githubusercontent.com/diegojeda/Bit-Optimization-ML/master/BLCat.csv?token=AP452QLHAGN3BO5MWGDC37C7JHAT6')
 
-Data obtained from the [palmerpenguins library](https://github.com/allisonhorst/palmerpenguins) in R by Allison Horst.
-""")
+st.title("Dashboard Para Visualizacion de Datos")
+st.markdown("""Esta aplicacion le permite visualizar los datos de performance de las brocas de su campo""")
 
-st.sidebar.header('User Input Features')
+@st.cache
+def load_data():
+    data = pd.read_csv(DATA_URL)
+    return data
 
-st.sidebar.markdown("""
-[Example CSV input file](https://raw.githubusercontent.com/dataprofessor/data/master/penguins_example.csv)
-""")
+data=load_data() 
+
+st.dataframe(data,2000,150)
 
 # Collects user input features into dataframe
 uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
