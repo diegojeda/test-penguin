@@ -20,7 +20,6 @@ def load_data():
 
 data=load_data() 
 
- 
 dic_uni = {'ROP' : ' (ft/hr)',
             'Footage':' (ft)',
             'Min Flow Rate' : ' (GPM)',
@@ -140,3 +139,13 @@ else: # Quitando Size
 
 st.dataframe(data,2000,150)
 
+plt.style.use('ggplot')
+plt.figure(figsize=(8, 5), dpi=80)
+plt.scatter(data[x],data[y],s=100,c=data[z],cmap='seismic',edgecolors='lightblue')
+plt.title('Optimizacion de ' + z  + '\n' + x + ' Vs ' + y )
+plt.xlabel(x + dic_uni[x])
+plt.ylabel(y + dic_uni[y])
+clb = plt.colorbar()
+clb.set_label(z +' '+ dic_uni[z]);
+
+st.pyplot()
